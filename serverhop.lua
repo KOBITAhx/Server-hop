@@ -16,7 +16,7 @@ function getLowestPopulatedServer()
             end
         end
     end
-  
+
     return nil
 end
 
@@ -28,6 +28,8 @@ if targetServerId then
         Text = "by KOBITAh",
         Duration = 2
     })
+
+    wait(3) 
 
     TeleportService:TeleportToPlaceInstance(placeId, targetServerId, Players.LocalPlayer)
 else
