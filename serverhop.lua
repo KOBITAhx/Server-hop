@@ -5,13 +5,13 @@ local HttpService = game:GetService("HttpService")
 local placeId = game.PlaceId
 local serversApi = "https://games.roblox.com/v1/games/" .. placeId .. "/servers/Public?sortOrder=Asc&limit=100"
 
-function getLowestPopulatedServer()
+function getServerWithMaxPlayers(maxPlayers)
     local servers = game:HttpGet(serversApi)
     local serverData = HttpService:JSONDecode(servers)
 
     if serverData and serverData.data then
         for _, server in pairs(serverData.data) do
-            if server.playing < 3 then
+            if server.maxPlayers <= maxPlayers then
                 return server.id
             end
         end
@@ -40,17 +40,20 @@ function teleportToServer(serverId)
     end
 end
 
-for i = 1, 10 do
-    local targetServerId = getLowestPopulatedServer()
-    
+local maxAttempts = 10
+
+for attempt = 1, maxAttempts do
+    local targetServerId = getServerWithMaxPlayers(3)
+
     if targetServerId then
         teleportToServer(targetServerId)
         break
     else
-        wait(2) 
+        wait(2)  -- Espera 2 segundos antes de intentar de nuevo
     end
 end
 
+-- Si no se encontró un servidor en los intentos, conectarse al más reciente
 if not targetServerId then
     local newestServerId = getNewestServer()
     teleportToServer(newestServerId)
